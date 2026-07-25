@@ -1,0 +1,14 @@
+[
+  {
+    "review_id": 1,
+    "text": "This serum with Niacinamide and Hyaluronic Acid is good for hydration.",
+    "expected_result": "Authentic",
+    "detected_ingredients": ["Niacinamide", "Hyaluronic Acid"]
+  },
+  {
+    "review_id": 2,
+    "text": "100% magic best product everrrr buy now!!",
+    "expected_result": "Fake / Suspicious",
+    "detected_ingredients": []
+  }
+]
