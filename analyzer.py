@@ -1,59 +1,64 @@
 import re
 
-# قاعدة بيانات مصغرة لمكونات التجميل الشهيرة ووظائفها
+# قاعدة بيانات المكونات التجميلية وفوائدها
 INGREDIENTS_DB = {
-    "retinol": "Anti-aging / Wrinkles",
-    "niacinamide": "Brightening / Pore control",
-    "hyaluronic acid": "Hydration / Moisture",
-    "salicylic acid": "Acne treatment / Exfoliation",
-    "vitamin c": "Glow / Antioxidant"
+    "niacinamide": "Soothes redness and improves skin texture",
+    "hyaluronic acid": "Deeply hydrates and plumps the skin",
+    "salicylic acid": "Unclogs pores and controls acne",
+    "retinol": "Promotes cell turnover and reduces wrinkles",
+    "vitamin c": "Brightens complexion and fades dark spots",
+    "glycolic acid": "Gently exfoliates dead skin cells",
+    "ceramides": "Restores and strengthens the natural skin barrier"
 }
 
-# كلمات وتراكيب مشبوهة تكثر في المراجعات المزيفة
+# الكلمات المفتاحية الترويجية المشبوهة
 SPAM_KEYWORDS = [
-    "100% magic", 
-    "miracle", 
-    "buy now", 
-    "click here", 
-    "best product everrrr", 
-    "guaranteed"
+    "magic", "100%", "miracle", "guaranteed", "buy now", 
+    "click here", "best product everrrr", "instant results", "shocking"
 ]
 
-def analyze_review(review_text):
-    print(f"\n--- Analyzing Review ---")
-    print(f"Text: \"{review_text}\"")
-    
-    # 1. كشف المراجعات المزيفة (Fake/Spam Detection)
-    spam_score = 0
-    text_lower = review_text.lower()
-    
-    for word in SPAM_KEYWORDS:
-        if word in text_lower:
-            spam_score += 1
-
-    # التقييم يعتبر مشكوك فيه لو احتوى على كلمات ترويجية متطرفة أو كان قصيرًا جدًا ومبالغًا فيه
-    is_fake = spam_score > 0 or len(review_text.split()) < 3
-    status = "⚠️ Suspicious / Fake Review" if is_fake else "✅ Authentic Review"
-    
-    # 2. استخراج المكونات الكيميائية وتحليلها (Ingredient Extraction)
-    found_ingredients = []
+def analyze_ingredients(text):
+    """استخراج المكونات الفعالة الموجودة في النص مع شرح فوائدها"""
+    text_lower = text.lower()
+    found_ingredients = {}
     for ingredient, benefit in INGREDIENTS_DB.items():
         if ingredient in text_lower:
-            found_ingredients.append(f"{ingredient.title()} ({benefit})")
+            found_ingredients[ingredient.title()] = benefit
+    return found_ingredients
 
-    # طباعة النتائج في الشاشة
-    print(f"Status: {status}")
-    if found_ingredients:
-        print("Detected Active Ingredients:", ", ".join(found_ingredients))
-    else:
-        print("Detected Active Ingredients: None found in database.")
+def analyze_review(text):
+    """تحليل موثوقية المراجعة وكشف الاحتيال"""
+    if not text or len(text.strip()) < 10:
+        return {
+            "is_authentic": False,
+            "confidence": 0,
+            "reason": "Text is too short to accurately analyze."
+        }
     
-    return not is_fake
+    text_lower = text.lower()
+    spam_score = 0
+    
+    # حساب النقاط بناءً على الكلمات الترويجية
+    for kw in SPAM_KEYWORDS:
+        if kw in text_lower:
+            spam_score += 2
+            
+    # كشف الأحرف المكررة بكثرة (مثل: everrrr!)
+    if re.search(r'(.)\1{3,}', text_lower):
+        spam_score += 2
+        
+    # كشف المبالغة في علامات التعجب
+    if text.count('!') > 3:
+        spam_score += 1
 
-# تشغيل تجريبي للكود (Demo execution)
-if __name__ == "__main__":
-    sample_review_1 = "This serum with Niacinamide and Hyaluronic Acid is good for hydration."
-    sample_review_2 = "100% magic best product everrrr buy now!!"
+    is_authentic = spam_score < 2
+    confidence = max(60, 100 - (spam_score * 20))
     
-    analyze_review(sample_review_1)
-    analyze_review(sample_review_2)
+    reason = "Normal feedback pattern detected." if is_authentic else "High frequency of promotional keywords or exaggeration."
+    
+    return {
+        "is_authentic": is_authentic,
+        "confidence": confidence,
+        "spam_score": spam_score,
+        "reason": reason
+    }
