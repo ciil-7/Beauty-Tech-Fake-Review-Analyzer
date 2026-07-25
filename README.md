@@ -1,13 +1,11 @@
-
 # 💄 Beauty-Tech Fake Review & Ingredient Analyzer
 
-![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)
-![Framework](https://img.shields.io/badge/Framework-Streamlit-FF4B4B.svg)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Status](https://img.shields.io/badge/Status-Completed--10/10-brightgreen.svg)
+![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![Release](https://img.shields.io/badge/Release-v1.0.0-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-An AI-powered web platform designed to analyze e-commerce product reviews for authenticity, detect potential spam/fraudulent content, and automatically extract key active cosmetic ingredients with their benefits.
-
+An AI-powered web application designed to analyze e-commerce product reviews for authenticity, detect potential spam/fraudulent content, and automatically extract key active cosmetic ingredients with their skincare benefits.
 ---
 
 ## ✨ Key Features
