@@ -1,115 +1,50 @@
-# 💄 Beauty-Tech Fake Review & Ingredient Analyzer
+<div align="center">
 
-> **تطوير:** ميار (ciil-7)  
-> **التخصص:** علوم حاسب (Computer Science)
+# 💄✨ Beauty-Tech Fake Review & Ingredient Analyzer
 
----
+**An AI-driven solution to safeguard e-commerce platforms by detecting fraudulent reviews and validating product claims.**
 
-## 📌 نبذة عن المشروع (Project Overview)
-محرك منطقي ذكي بلغة **Python** يهدف إلى **كشف مراجعات وتقييمات منتجات التجميل والعناية المزيفة أو المبالغ فيها إعلانيًا**، وذلك عن طريق ربط تحليل النصوص بالحقائق العلمية والمكونات الكيميائية للمنتج (Ingredient Science Verification).
+[![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit_Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![NLP](https://img.shields.io/badge/NLP-Natural_Language_Processing-green?style=for-the-badge)](#)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
-تتميز الخوارزمية بأنها لا تفحص فقط لغة النص، بل **تقارن ادعاءات التقييم بالخصائص الكيميائية والعلمية للمكونات** لتحديد ما إذا كان التقييم ممكناً علمياً أم كاذباً.
-
----
-
-## ⚙️ كيف تعمل الخوارزمية؟ (How it Works)
-1. **قاعدة البيانات الكيميائية:** تحتوي على المكونات العلمية (مثل: أحماض التقشير، زيوت الترطيب) والادعاءات المستحيلة علمياً لكل مكون.
-2. **فحص العبارات الإعلانية:** الكشف عن الكلمات المبالغ فيها مثل (*سحر، فوراً، بيومين*).
-3. **التحقق العلمي:** مطابقة ادعاء التقييم مع خصائص المكون (مثال: إذا ادعى التقييم أن زيت الترطيب قام بتقشير البشرة، يتم تصنيفه كادعاء مستحيل علمياً).
-4. **مؤشر المصداقية (Credibility Score):** حساب نسبة مئوية لمصداقية التقييم وإخراج تقرير تفصيلي بالنتيجة.
+</div>
 
 ---
 
-## 💻 الكود البرمجي (Python Code)
+## 📌 Executive Summary
 
-```python
-# ======================================================
-# Beauty-Tech Fake Review & Ingredient Analyzer
-# Developed by: ciil-7
-# ======================================================
+In the rapidly evolving **Beauty-Tech** landscape, consumer buying decisions heavily rely on authentic customer feedback and review credibility. Fake, incentivized, or bot-generated reviews harm brand reputation and misguide consumers.
 
-# 1. قاعدة بيانات المكونات والخصائص العلمية لكل مكون
-INGREDIENTS_DB = {
-    "sweet_almond_oil": {
-        "ar_name": "زيت اللوز الحلو",
-        "type": "Moisturizer",
-        "effects": ["ترطيب", "نعومة", "تغذية"],
-        "impossible_claims": ["تقشير", "إزالة تصبغات", "تفتيح سريع", "علاج حب الشباب"]
-    },
-    "bitter_almond_oil": {
-        "ar_name": "زيت اللوز المر",
-        "type": "Brightening / Pigmentation",
-        "effects": ["تفتيح", "تخفيف التصبغات", "توحيد اللون"],
-        "impossible_claims": ["ترطيب عميق", "ترطيب شفايف"]
-    },
-    "glycolic_acid": {
-        "ar_name": "حمض الجليكوليك (AHA)",
-        "type": "Exfoliant",
-        "effects": ["تقشير", "تجديد الخلايا", "إزالة تصبغات"],
-        "impossible_claims": ["ترطيب", "تهدئة البشرة المتهيجة"]
-    }
-}
+**Beauty-Tech Fake Review Analyzer** is an intelligent Natural Language Processing (NLP) framework that detects fraudulent reviews and cross-references product claims against active chemical ingredients (e.g., Retinol, Niacinamide, Hyaluronic Acid) to ensure maximum credibility.
 
-# 2. قائمة بالعبارات والمؤشرات المبالغ فيها إعلانيًا
-EXAGGERATED_WORDS = ["سحر", "من أول يوم", "بيومين", "فوراً", "معجزة", "خرافي بشكل مو طبيعي"]
+---
 
+## 🔥 Key Features
 
-def analyze_review(product_ingredient_key, review_text):
-    """
-    دالة تفحص التقييم وتقارنه بالتركيبة الكيميائية للمنتج.
-    """
-    ingredient_info = INGREDIENTS_DB.get(product_ingredient_key)
-    
-    if not ingredient_info:
-        return "المكون غير موجود في قاعدة البيانات."
+| Feature | Description |
+| :--- | :--- |
+| 🧠 **NLP Fake Review Detection** | Utilizes Machine Learning models to identify stylistic and linguistic patterns typical of spam/fake reviews. |
+| 🧪 **Ingredient Verification** | Cross-references user reviews and marketing claims with active chemical properties. |
+| 💅 **Domain-Tailored Pipeline** | Specifically fine-tuned for cosmetic, skincare, and beauty terminology. |
+| 📊 **Credibility Scoring System** | Generates an overall confidence and credibility percentage for analyzed product reviews. |
 
-    score = 100  # مؤشر المصداقية المبدئي
-    flags = []   # الملاحظات والتنبيهات
+---
 
-    # أ. فحص العبارات المبالغ فيها
-    for word in EXAGGERATED_WORDS:
-        if word in review_text:
-            score -= 20
-            flags.append(f"استخدام لغة مبالغ فيها إعلانيًا: '{word}'")
+## 🛠️ Tech Stack & Libraries
 
-    # ب. الفحص العلمي (مقارنة الادعاء مع المكون الحقيقي)
-    for claim in ingredient_info["impossible_claims"]:
-        if claim in review_text:
-            score -= 50
-            flags.append(
-                f"ادعاء ينافي الخصائص العلمية للمكون ({ingredient_info['ar_name']})! "
-                f"الادعاء: '{claim}'"
-            )
+* **Core Engine:** Python 3.x
+* **Data Manipulation:** `pandas`, `numpy`
+* **Natural Language Processing (NLP):** `nltk`, `spacy`, `scikit-learn`
+* **Text Embeddings & Classification:** TF-IDF Vectorization, Logistic Regression / Random Forest
+* **Interface (Optional):** Streamlit / Gradio
 
-    # ج. تحديد النتيجة النهائية
-    print("=" * 60)
-    print(f"📦 المكون الأساسي للمنتج: {ingredient_info['ar_name']}")
-    print(f"📝 نص التقييم: \"{review_text}\"")
-    print("-" * 60)
-    print(f"📊 مؤشر مصداقية التقييم: {max(score, 0)}%")
-    
-    if score >= 80:
-        print("✅ النتيجة: تقييم موثوق وواقعي.")
-    elif 40 <= score < 80:
-        print("⚠️ النتيجة: تقييم مشكوك فيه (قد يحتوي على مبالغة إعلانية).")
-    else:
-        print("🚨 النتيجة: تقييم وهمي / غير مجدٍ علمياً (Fake / Misleading Review)!")
+---
 
-    if flags:
-        print("\n🔍 أسباب التنبيه:")
-        for flag in flags:
-            print(f" - {flag}")
-    print("=" * 60 + "\n")
+## 🚀 Getting Started
 
-
-# ======================================================
-# 🧪 تجربة الخوارزمية
-# ======================================================
-
-# تجربة 1: تقييم كاذب ينافي العلم
-review_1 = "هذا الكريم سحر! قشر وجهي وشال التصبغات بيومين فوراً!"
-analyze_review("sweet_almond_oil", review_1)
-
-# تجربة 2: تقييم واقعي وموثوق
-review_2 = "يعطي ترطيب ممتاز ونعومة للبشرة مع الاستمرار."
-analyze_review("sweet_almond_oil", review_2)
+### 1. Clone the Repository
+```bash
+git clone [https://github.com/your-username/Beauty-Tech-Fake-Review-Analyzer.git](https://github.com/your-username/Beauty-Tech-Fake-Review-Analyzer.git)
+cd Beauty-Tech-Fake-Review-Analyzer
