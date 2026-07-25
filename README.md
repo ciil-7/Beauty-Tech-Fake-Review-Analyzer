@@ -1,7 +1,3 @@
-![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![GitHub Release](https://img.shields.io/github/v/release/ciil-7/Beauty-Tech-Fake-Review-Analyzer)
-![Status](https://img.shields.io/badge/status-active-brightgreen)
 
 # 💄 Beauty-Tech Fake Review & Ingredient Analyzer
 
