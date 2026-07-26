@@ -1,5 +1,5 @@
 # 💄 Beauty-Tech Fake Review & Ingredient Analyzer
-
+🚀 **Live Demo:** [Click here to test the app](https://beauty-tech-fake-review-analyzer-cywevdb3inqswxezcomyhs.streamlit.app)
 ![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Release](https://img.shields.io/badge/Release-v1.0.0-blue?style=for-the-badge)
