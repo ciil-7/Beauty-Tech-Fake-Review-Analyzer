@@ -1,77 +1,67 @@
 import streamlit as st
-import pandas as pd
-from analyzer import analyze_review, analyze_ingredients
+from analyzer import analyze_review, analyze_ingredients, get_model_evaluation_metrics
 
-# إعدادات الصفحة
+# إعدادات صفحة Streamlit
 st.set_page_config(
-    page_title="Beauty-Tech Review Analyzer",
-    page_icon="💄",
-    layout="wide"
+    page_title="Beauty-Tech Fake Review Analyzer",
+    page_icon="✨",
+    layout="centered"
 )
 
-# القائمة الجانبية (Sidebar)
-st.sidebar.image("https://img.icons8.com/color/96/sparkling.png", width=60)
-st.sidebar.title("Beauty-Tech AI")
-st.sidebar.write("Advanced Fraud Detection & Cosmetic Ingredient Parser.")
-st.sidebar.divider()
-st.sidebar.info("💡 **Tip:** Real reviews usually include specific product experience details rather than extreme hype.")
+# عنوان التطبيق والوصف
+st.title("✨ Beauty-Tech Fake Review Analyzer")
+st.markdown("Evaluate the authenticity of cosmetic product reviews and extract active skincare ingredients using a supervised Machine Learning pipeline.")
 
-# العنوان الرئيسي
-st.title("💄 Beauty-Tech Fake Review & Ingredient Analyzer")
-st.caption("AI-Powered Platform for E-Commerce Authenticity & Cosmetic Ingredient Insights")
+st.markdown("---")
 
-st.divider()
+# إدخال المراجعة من المستخدم
+st.subheader("📝 Enter Product Review")
+user_review = st.text_area(
+    "Type or paste a cosmetic review below:",
+    placeholder="e.g., I've been using this serum with Niacinamide for two weeks and my skin feels hydrated...",
+    height=120
+)
 
-# تقسيم الشاشة إلى تبويبات (Tabs)
-tab1, tab2 = st.tabs(["🔍 Analyze Single Review", "📊 Batch CSV Analysis"])
-
-# --- التبويب الأول: تحليل مراجعة واحدة ---
-with tab1:
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        user_input = st.text_area(
-            "Enter Product Review Text:", 
-            placeholder="e.g., I've been using this serum with Niacinamide and Salicylic Acid for two weeks, my skin feels hydrated!",
-            height=150
-        )
-        analyze_btn = st.button("🚀 Run AI Analysis", type="primary", use_container_width=True)
+if st.button("Analyze Review", type="primary"):
+    if not user_review.strip():
+        st.warning("⚠️ Please enter a valid review text before analyzing.")
+    else:
+        with st.spinner("Analyzing review and extracting ingredients..."):
+            # 1. تحليل صحة المراجعة
+            review_result = analyze_review(user_review)
+            
+            # 2. استخراج المكونات النشطة
+            ingredients_result = analyze_ingredients(user_review)
+            
+        st.markdown("---")
         
-    if analyze_btn:
-        if user_input.strip():
-            results = analyze_review(user_input)
-            ingredients = analyze_ingredients(user_input)
-            
-            with col2:
-                st.subheader("📊 Result Breakdown")
-                if results["is_authentic"]:
-                    st.success("✅ **Authentic Review**")
-                else:
-                    st.error("⚠️ **Suspicious / Fake Review**")
-                
-                # عرض مؤشرات
-                st.metric(label="AI Confidence Score", value=f"{results['confidence']}%")
-                st.caption(f"**Details:** {results['reason']}")
-            
-            st.divider()
-            
-            # عرض المكونات المستخرجة
-            st.subheader("🧪 Detected Active Ingredients")
-            if ingredients:
-                for ing, benefit in ingredients.items():
-                    st.info(f"✨ **{ing}**: {benefit}")
+        # عرض النتائج في أعمدة متجاورة
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("🔍 Authenticity Result")
+            if review_result["is_authentic"]:
+                st.success("✅ **Authentic Review**")
             else:
-                st.write("No specific active ingredients detected from the database list.")
-        else:
-            st.warning("Please input review text before clicking analyze.")
+                st.error("🚨 **Potential Fake / Hype Review**")
+            
+            st.metric(label="Confidence Score", value=f"{review_result['confidence']}%")
+            st.info(review_result["reason"])
+            
+        with col2:
+            st.subheader("🧪 Active Ingredients")
+            if ingredients_result:
+                for ing, benefit in ingredients_result.items():
+                    st.markdown(f"**- {ing}:** {benefit}")
+            else:
+                st.info("No major active cosmetic ingredients detected in this specific text.")
 
-# --- التبويب الثاني: تحليل ملف كامل ---
-with tab2:
-    st.subheader("📁 Bulk Dataset Analysis")
-    st.write("Preview sample batch dataset or upload your custom Excel/CSV.")
+# قسم تقييم وأداء النموذج (Model Performance Metrics)
+st.markdown("---")
+with st.expander("📊 View Machine Learning Model Performance Metrics"):
+    metrics = get_model_evaluation_metrics()
     
-    try:
-        df = pd.read_csv("data/reviews.csv")
-        st.dataframe(df, use_container_width=True)
-    except Exception:
-        st.info("No sample data found in `data/reviews.csv`.")
+    st.write(f"**Model Accuracy on Test Split:** `{metrics['accuracy']}%`")
+    st.write("**Confusion Matrix (Test Set):**")
+    st.code(str(metrics['confusion_matrix']))
+    st.markdown("The model uses a supervised **Logistic Regression** classifier powered by **TF-IDF** feature extraction, evaluated on a hold-out test set.")
