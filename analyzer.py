@@ -2,8 +2,10 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-# 1. توليد قاعدة بيانات تدريب واسعة وكبيرة تلقائياً داخل الكود (تتجاوز مئات العينات)
+# 1. توليد قاعدة بيانات تدريب واسعة وكبيرة داخل الكود
 base_authentic = [
     "I've been using this serum with Niacinamide for two weeks and my skin feels hydrated.",
     "After 10 days of applying this cream, my pores look slightly better, good product.",
@@ -26,20 +28,39 @@ base_fake = [
     "Unreal results within minutes! The greatest beauty secret ever discovered!"
 ]
 
-# مضاعفة البيانات برمجياً لرفع حجم التدريب إلى مئات العينات وتجنب مشكلة البيانات الصغيرة
+# مضاعفة البيانات برمجياً لتوفير عينات كافية للتدريب والاختبار
 texts = (base_authentic * 50) + (base_fake * 50)
 labels = (["authentic"] * len(base_authentic) * 50) + (["fake"] * len(base_fake) * 50)
 
-# 2. بناء وتدريب نموذج تعلم الآلة بنطاق واسع وذكاء اصطناعي حقيقي
+# 2. تقسيم البيانات إلى مجموعات تدريب (Train) واختبار (Test) لتقييم النموذج بحيادية
+X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2, random_state=42)
+
+# 3. بناء وتدريب نموذج تعلم الآلة الكلاسيكي
 ml_model = make_pipeline(
     TfidfVectorizer(max_features=1000, ngram_range=(1, 2)), 
     LogisticRegression(C=1.0, max_iter=500)
 )
-ml_model.fit(texts, labels)
+ml_model.fit(X_train, y_train)
+
+# 4. حساب مقاييس الأداء والتقييم (Evaluation Metrics) للنموذج
+y_pred = ml_model.predict(X_test)
+model_accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred, output_dict=True)
+
+def get_model_evaluation_metrics():
+    """
+    إرجاع مقاييس الأداء التقنية الخاصة بالنموذج (Accuracy, Precision, Recall, Confusion Matrix)
+    """
+    return {
+        "accuracy": round(model_accuracy * 100, 2),
+        "confusion_matrix": conf_matrix.tolist(),
+        "classification_report": class_report
+    }
 
 def analyze_review(text):
     """
-    تحليل نص المراجعة باستخدام نموذج تعلم الآلة وحساب نسبة الثقة.
+    تحليل نص المراجعة باستخدام نموذج تعلم الآلة وحساب نسبة الثقة الإحصائية.
     """
     if not text or not text.strip():
         return {
@@ -56,7 +77,7 @@ def analyze_review(text):
         return {
             "is_authentic": False,
             "confidence": confidence,
-            "reason": f"Machine Learning model detected high promotional hype patterns with {confidence}% confidence based on trained dataset."
+            "reason": f"Machine Learning model detected high promotional hype patterns with {confidence}% confidence based on trained classification pipeline."
         }
     else:
         return {
