@@ -1,58 +1,67 @@
-from transformers import pipeline
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
 
-# 1. تحميل نموذج ذكاء اصطناعي جاهز لتحليل المشاعر والسياق (AI-powered)
-# هذا النموذج يعتبر حقيقياً (Machine Learning / Deep Learning) وليس مجرد قواعد ثابتة
-try:
-    sentiment_analyzer = pipeline(
-        "sentiment-analysis", 
-        model="distilbert-base-uncased-finetuned-sst-2-english"
-    )
-except Exception:
-    sentiment_analyzer = None
+# 1. تجهيز بيانات تدريب ذكية (Training Dataset) لنموذج الـ Machine Learning
+training_data = [
+    # مراجعات حقيقية (Authentic)
+    ("I've been using this serum with Niacinamide for two weeks and my skin feels hydrated.", "authentic"),
+    ("After 10 days of applying this cream, my pores look slightly better, good product.", "authentic"),
+    ("Noticed some mild improvements in my skin texture after a month of daily use.", "authentic"),
+    ("Good packaging and gentle on my sensitive skin, used it for 3 weeks.", "authentic"),
+    ("The bottle lasted a month, nice hydration though a bit pricey.", "authentic"),
+    
+    # مراجعات مزيفة / مبالغ فيها (Fake / Hype)
+    ("MIRACLE product!! Changed my life overnight, 100% cure for everything, buy it NOW!", "fake"),
+    ("Absolute magic! Best ever cream in the whole universe, perfection in a bottle!", "fake"),
+    ("Best product ever created! Instant results on day one, total perfection!", "fake"),
+    ("Unbelievable miracle cream, cured all my skin problems instantly! AMAZING!", "fake")
+]
+
+texts = [item[0] for item in training_data]
+labels = [item[1] for item in training_data]
+
+# 2. بناء وتدريب نموذج تعلم الآلة (ML Pipeline: TF-IDF + Logistic Regression)
+ml_model = make_pipeline(TfidfVectorizer(), LogisticRegression())
+ml_model.fit(texts, labels)
 
 def analyze_review(text):
     """
-    تقوم هذه الدالة بتحليل نص المراجعة باستخدام نموذج ذكاء اصطناعي حقيقي
-    لتحديد ما إذا كانت المراجعة تبدو حقيقية (موثوقة) أو مزيفة/مبالغ فيها.
+    تحليل نص المراجعة باستخدام نموذج تعلم الآلة (Machine Learning Classifier)
+    مبني عبر scikit-learn لتصنيف النص بدقة.
     """
-    if not text or not sentiment_analyzer:
+    if not text or not text.strip():
         return {
             "is_authentic": True,
-            "confidence": 85,
-            "reason": "Default analysis mode (AI model loading fallback)."
+            "confidence": 80,
+            "reason": "Please provide a valid review text for analysis."
         }
     
-    # تنبؤ الذكاء الاصطناعي
-    result = sentiment_analyzer(text[:512])[0]
-    label = result['label'] # POSITIVE أو NEGATIVE
-    score = round(result['score'] * 100, 2)
+    # التنبؤ بواسطة نموذج الـ ML
+    prediction = ml_model.predict([text])[0]
+    probabilities = ml_model.predict_proba([text])[0]
     
-    # منطق التقييم الذكي:
-    # المراجعات المزيفة غالباً تحتوي على مبالغة شديدة في الإيجابية (إعلانية بحتة) 
-    # أو نبرة غير واقعية.
-    if label == "POSITIVE" and score > 98.0:
-        # الثقة المفرطة جداً قد تكون علامة ترويج أو مراجعة وهمية مدفوعة
+    # حساب نسبة الثقة بناءً على مخرجات النموذج الاحتمالية
+    max_prob = max(probabilities) * 100
+    confidence = round(max_prob, 1)
+    
+    if prediction == "fake":
         return {
             "is_authentic": False,
-            "confidence": score,
-            "reason": "AI detected extreme positive sentiment hype, typical of unauthentic or sponsored reviews."
-        }
-    elif label == "POSITIVE":
-        return {
-            "is_authentic": True,
-            "confidence": score,
-            "reason": "AI verified natural positive sentiment and realistic review tone."
+            "confidence": confidence,
+            "reason": "Machine Learning model detected high promotional hype patterns characteristic of unauthentic reviews."
         }
     else:
         return {
             "is_authentic": True,
-            "confidence": score,
-            "reason": "AI detected critical/negative feedback, which usually indicates a genuine user experience."
+            "confidence": confidence,
+            "reason": "Machine Learning model verified natural language patterns and authentic review tone."
         }
 
 def analyze_ingredients(text):
     """
-    استخراج المكونات التجميلية النشطة وفوائدها من النص بطريقة ذكية
+    استخراج المكونات التجميلية النشطة وفوائدها من نص المراجعة
     """
     text_lower = text.lower()
     ingredients_db = {
