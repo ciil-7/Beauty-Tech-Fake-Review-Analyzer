@@ -1,29 +1,34 @@
-# 💄 Beauty-Tech Fake Review & Ingredient Analyzer
-🚀 **Live Demo:** [Click here to test the app](https://beauty-tech-fake-review-analyzer-cywevdb3inqswxezcomyhs.streamlit.app)
-![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
-![Release](https://img.shields.io/badge/Release-v1.0.0-blue?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+# Beauty-Tech Fake Review Analyzer
 
-An AI-powered web application designed to analyze e-commerce product reviews for authenticity, detect potential spam/fraudulent content, and automatically extract key active cosmetic ingredients with their skincare benefits.
----
+A robust Streamlit web application designed to evaluate the authenticity of cosmetic product reviews and extract active skincare ingredients using a supervised Machine Learning pipeline.
 
-## ✨ Key Features
-
-- **🛡️ Fake Review Detection**: Identifies aggressive promotional patterns, keyword stuffing, and suspicious repetitive characters.
-- **🧪 Active Ingredient Parser**: Detects popular cosmetic active ingredients (e.g., *Niacinamide*, *Salicylic Acid*, *Retinol*) and highlights their skincare benefits.
-- **📊 Interactive Streamlit UI**: Offers a clean user experience with single-text analysis and bulk CSV data views.
-- **⚡ Fast & Lightweight**: Zero complex external API dependencies—runs efficiently offline or locally.
+## 🚀 Features
+* **Review Authenticity Detection:** Analyzes review text to detect unauthentic, overly promotional, or fake hype patterns.
+* **Probabilistic Confidence Scoring:** Computes statistical confidence metrics (`predict_proba`) for transparent reliability evaluation.
+* **Active Ingredient Extraction:** Automatically identifies active cosmetic ingredients (such as Niacinamide, Hyaluronic Acid, Retinol, etc.) mentioned in the review and lists their clinical skin benefits.
+* **Interactive UI:** Built with Streamlit for a fast, responsive, and user-friendly experience.
 
 ---
 
-## 🛠️ Project Structure
+## 📊 Model Architecture & Methodology
+The application evaluates review authenticity using a supervised **Machine Learning pipeline** rather than complex generative AI models:
+* **Feature Extraction:** Utilizes **TF-IDF (Term Frequency-Inverse Document Frequency)** with unigrams and bigrams (`ngram_range=(1, 2)`) to capture individual words and contextual phrase patterns (such as marketing hype vs. regular speech).
+* **Classification Algorithm:** Powered by a **Logistic Regression** classifier trained on a balanced corpus of authentic and unauthentic review samples.
+* **Confidence Estimation:** Generates probabilistic confidence scores to provide transparent and quantifiable reliability metrics for each analysis.
 
-```text
-Beauty-Tech-Fake-Review-Analyzer/
-├── app.py              # Main Streamlit web application
-├── analyzer.py         # AI analysis logic & ingredient detection DB
-├── requirements.txt    # Project dependencies
-├── data/               # Sample review datasets (CSV)
-├── examples/           # Sample API/JSON input formats
-└── screenshots/        # Application screenshots and demo assets
+---
+
+## 🛠️ Tech Stack
+* **Python**
+* **Scikit-Learn** (for Vectorization and Logistic Regression Classification)
+* **Pandas** (for Data Processing)
+* **Streamlit** (for Web Interface Frontend and Deployment)
+
+---
+
+## ⚙️ Installation & Running Locally
+
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/mayaralshahrani/Beauty-Tech-Fake-Review-Analyzer.git](https://github.com/mayaralshahrani/Beauty-Tech-Fake-Review-Analyzer.git)
+   cd Beauty-Tech-Fake-Review-Analyzer
