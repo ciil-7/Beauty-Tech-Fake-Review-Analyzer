@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -5,7 +6,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-# 1. توليد قاعدة بيانات تدريب واسعة وكبيرة داخل الكود
+# 1. توليد قاعدة بيانات تدريب واسعة داخل الكود
 base_authentic = [
     "I've been using this serum with Niacinamide for two weeks and my skin feels hydrated.",
     "After 10 days of applying this cream, my pores look slightly better, good product.",
@@ -28,30 +29,26 @@ base_fake = [
     "Unreal results within minutes! The greatest beauty secret ever discovered!"
 ]
 
-# مضاعفة البيانات برمجياً لتوفير عينات كافية للتدريب والاختبار
 texts = (base_authentic * 50) + (base_fake * 50)
 labels = (["authentic"] * len(base_authentic) * 50) + (["fake"] * len(base_fake) * 50)
 
-# 2. تقسيم البيانات إلى مجموعات تدريب (Train) واختبار (Test) لتقييم النموذج بحيادية
+# 2. تقسيم البيانات لتدريب واختبار النموذج
 X_train, X_test, y_train, y_test = train_test_split(texts, labels, test_size=0.2, random_state=42)
 
-# 3. بناء وتدريب نموذج تعلم الآلة الكلاسيكي
+# 3. تدريب نموذج تعلم الآلة
 ml_model = make_pipeline(
     TfidfVectorizer(max_features=1000, ngram_range=(1, 2)), 
     LogisticRegression(C=1.0, max_iter=500)
 )
 ml_model.fit(X_train, y_train)
 
-# 4. حساب مقاييس الأداء والتقييم (Evaluation Metrics) للنموذج
+# 4. حساب مقاييس الأداء
 y_pred = ml_model.predict(X_test)
 model_accuracy = accuracy_score(y_test, y_pred)
 conf_matrix = confusion_matrix(y_test, y_pred)
 class_report = classification_report(y_test, y_pred, output_dict=True)
 
 def get_model_evaluation_metrics():
-    """
-    إرجاع مقاييس الأداء التقنية الخاصة بالنموذج (Accuracy, Precision, Recall, Confusion Matrix)
-    """
     return {
         "accuracy": round(model_accuracy * 100, 2),
         "confusion_matrix": conf_matrix.tolist(),
@@ -59,9 +56,6 @@ def get_model_evaluation_metrics():
     }
 
 def analyze_review(text):
-    """
-    تحليل نص المراجعة باستخدام نموذج تعلم الآلة وحساب نسبة الثقة الإحصائية.
-    """
     if not text or not text.strip():
         return {
             "is_authentic": True,
@@ -88,21 +82,30 @@ def analyze_review(text):
 
 def analyze_ingredients(text):
     """
-    استخراج المكونات التجميلية النشطة وفوائدها من نص المراجعة
+    استخراج المكونات النشطة ديناميكياً من ملف ingredients.csv الخارجي
     """
     text_lower = text.lower()
-    ingredients_db = {
-        "niacinamide": "Brightens skin, minimizes pore appearance, and regulates oil production.",
-        "salicylic acid": "Exfoliates inside pores, targets acne, and reduces blackheads.",
-        "hyaluronic acid": "Deeply hydrates and plumps the skin by retaining moisture.",
-        "retinol": "Boosts cell turnover, reduces fine lines, and improves skin texture.",
-        "vitamin c": "Powerful antioxidant that brightens skin tone and fades dark spots.",
-        "ceramides": "Restores and strengthens the natural skin barrier."
-    }
-    
     detected = {}
-    for ingredient, benefit in ingredients_db.items():
-        if ingredient in text_lower:
-            detected[ingredient.title()] = benefit
+    
+    # مسار ملف الـ CSV الخارجي
+    csv_path = "ingredients.csv"
+    
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path)
+        for _, row in df.iterrows():
+            ing_name = str(row['ingredient']).strip()
+            ing_benefit = str(row['benefit']).strip()
             
+            if ing_name.lower() in text_lower:
+                detected[ing_name] = ing_benefit
+    else:
+        # احتياطياً في حال لم يُوجد الملف
+        fallback_db = {
+            "Niacinamide": "Brightens skin, minimizes pore appearance, and regulates oil production.",
+            "Hyaluronic Acid": "Deeply hydrates and plumps the skin by retaining moisture."
+        }
+        for ing, ben in fallback_db.items():
+            if ing.lower() in text_lower:
+                detected[ing] = ben
+                
     return detected
